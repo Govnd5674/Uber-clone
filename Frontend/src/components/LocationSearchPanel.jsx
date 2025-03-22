@@ -1,34 +1,30 @@
 import React from 'react'
 
-const LocationSearchPanel = (props) => {
-  console.log(props);
-  
+const LocationSearchPanel = ({ suggestions, setVehiclePanel, setPanelOpen, setPickup, setDestination, activeField }) => {
 
-    // Sample array for location
-    const locations = [
-      'Rainbow boys Hostel , Nagpur',
-      '20 Cooper Square, New York, NY 10003, USA',
-      '33 3rd Ave, New York, NY 10003, USA',
-      'Rainbow boys Hostel , Nagpur',
-      '20 Cooper Square, New York, NY 10003, USA'
+    const handleSuggestionClick = (suggestion) => {
+        if (activeField === 'pickup') {
+            setPickup(suggestion)
+        } else if (activeField === 'destination') {
+            setDestination(suggestion)
+        }
+        // setVehiclePanel(true)
+        // setPanelOpen(false)
+    }
 
-    ]
-
-  return (
-    <div>
-      {
-        locations.map(function(elem,idx){
-          return<div key={idx} onClick={() => {
-            props.setVehiclePanel(true)
-            props.setPanelOpen(false)
-          }} className='flex items-center border-2 p-3 rounded-xl border-gray-50 active:border-black justify-start my-2 gap-4'>
-          <h2 className='bg-[#eee] h-10 w-10 flex items-center justify-center rounded-full' ><i className="ri-map-pin-range-fill"></i></h2>
-          <h4 className='font-medium'>{elem}</h4>
+    return (
+        <div>
+            {/* Display fetched suggestions */}
+            {
+                suggestions.map((elem, idx) => (
+                    <div key={idx} onClick={() => handleSuggestionClick(elem)} className='flex gap-4 border-2 p-3 border-gray-50 active:border-black rounded-xl items-center my-2 justify-start'>
+                        <h2 className='bg-[#eee] h-8 flex items-center justify-center w-12 rounded-full'><i className="ri-map-pin-fill"></i></h2>
+                        <h4 className='font-medium'>{elem}</h4>
+                    </div>
+                ))
+            }
         </div>
-        })
-      } 
-    </div>
-  )
+    )
 }
 
 export default LocationSearchPanel

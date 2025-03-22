@@ -25,7 +25,7 @@ const CaptainSignup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const captainData = {
+    const captain = {
       fullname: {
         firstname: firstName,
         lastname: lastName,
@@ -41,7 +41,7 @@ const CaptainSignup = () => {
 
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData);
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captain);
     if(response.status === 201) {
       const data = response.data;
       setCaptain(data.captain);
