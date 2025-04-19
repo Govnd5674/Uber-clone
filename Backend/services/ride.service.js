@@ -91,7 +91,7 @@ module.exports.confirmRide = async ({
     })
 
     const ride = await rideModel.findOne({
-        _id: rideId
+        _id: rideId,
     }).populate('user').populate('captain').select('+otp');
 
     if (!ride) {

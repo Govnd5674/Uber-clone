@@ -13,7 +13,7 @@ const UserProtectWrapper = ({
 
     useEffect(() => {
 
-        console.log(token);
+        // console.log(token);
          
 
         if (!token) {

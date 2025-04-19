@@ -1,4 +1,4 @@
-import React, { useRef, useState , useEffect} from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import axios from "axios";
@@ -8,9 +8,13 @@ import ConfirmedRide from "../components/ConfirmedRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
 import LocationSearchPanel from "../components/LocationSearchPanel";
-import { SocketContext } from '../context/SocketContext';
-import { useContext } from 'react';
-import { UserDataContext } from '../context/UserContext';
+import { SocketContext } from "../context/SocketContext";
+import { useContext } from "react";
+import { UserDataContext } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTraking";
+
+
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -19,12 +23,13 @@ const Home = () => {
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
   const [vehiclePanel, setVehiclePanel] = useState(false);
   const [vehicleFound, setVehicleFound] = useState(false);
-  const [waitingForDriver, setWaitingForDriver] = useState();
+  const [waitingForDriver, setWaitingForDriver] = useState( );
   const [pickupSuggestions, setPickupSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
-
+  const [activeField, setActiveField] = useState(null);
+  const [ride ,setRide] = useState(null);
 
   const vehiclePanelRef = useRef(null);
   const confirmRidePanelRef = useRef(null);
@@ -32,32 +37,29 @@ const Home = () => {
   const panelRef = useRef(null);
   const vehicleFoundRef = useRef(null);
   const waitingForDriverRef = useRef(null);
-  const [activeField, setActiveField] = useState(null);
 
+  const navigate = useNavigate();
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
-  // const navigate = useNavigate();
-  
 
   useEffect(() => {
-    console.log(user);
-      socket.emit("join", { userType: "user", userId: user._id })
-  }, [ user ])
-
-  // socket.on('ride-confirmed', ride => {
+    // console.log(user);
+    socket.emit("join", { userType: "user", userId: user._id });
+  }, [user]);
 
 
-  //     setVehicleFound(false)
-  //     setWaitingForDriver(true)
-  //     setRide(ride)
-  // })
+  socket.on("ride-confirmed", ride => {
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+    setRide(ride);
+});
 
-  // socket.on('ride-started', ride => {
-  //     console.log("ride")
-  //     setWaitingForDriver(false)
-  //     navigate('/riding', { state: { ride } }) 
-  // })
+  socket.on("ride-started", ride => {
+    setWaitingForDriver(false);
+    navigate("/riding", { state: { ride } });
+    // console.log("Ride started:", ride);
+  });
 
 
   const handlePickupChange = async (e) => {
@@ -214,6 +216,7 @@ const Home = () => {
       }
     );
     console.log(response.data);
+    // console.log(`${localStorage.getItem('token')}`);
   }
 
   return (
@@ -225,11 +228,12 @@ const Home = () => {
       />
       <div className="h-screen w-screen">
         {/* temp img */}
-        <img
+        {/* <img
           className="h-full w-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
           alt=""
-        />
+        /> */}
+        <LiveTracking />
       </div>
       <div className=" absolute flex flex-col justify-end h-screen top-0 w-full ">
         <div className="h-[40%] p-6 bg-white relative">
@@ -339,7 +343,12 @@ const Home = () => {
         ref={waitingForDriverRef}
         className="fixed z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12 w-full"
       >
-        <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
+        <WaitingForDriver 
+        setWaitingForDriver={setWaitingForDriver} 
+        ride={ride}
+        setVehicleFound={setVehicleFound}
+        waitingForDriver={WaitingForDriver}
+        />
       </div>
     </div>
   );
